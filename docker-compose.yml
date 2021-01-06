@@ -1,4 +1,5 @@
 version: "3"
+
 services:
   contact-web:
     build:
@@ -9,6 +10,9 @@ services:
     restart: on-failure
     environment:
       NODE_ENV: dev
+      ENV: local
+      PORT: 3001
+      HOST: 0.0.0.0
       DB: "postgres://postgres:postgres@xws-db:5432"
     env_file:
       - ../contact-web/.env
@@ -25,11 +29,33 @@ services:
     restart: on-failure
     environment:
       NODE_ENV: dev
+      ENV: local
+      PORT: 3000
+      HOST: 0.0.0.0
       DB: "postgres://postgres:postgres@xws-db:5432"
     env_file:
       - ../alert-web/.env
     ports:
       - "3000:3000"
+    command: sh -c "wait-on tcp:xws-db:5432 && node index.js"
+
+  notification-api:
+    build:
+      context: ../notification-api
+    image: notification-api
+    depends_on:
+      - xws-db
+    restart: on-failure
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3002
+      HOST: 0.0.0.0
+      DB: "postgres://postgres:postgres@xws-db:5432"
+    env_file:
+      - ../notification-api/.env
+    ports:
+      - "3002:3002"
     command: sh -c "wait-on tcp:xws-db:5432 && node index.js"
 
   xws-db:
