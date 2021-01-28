@@ -30,3 +30,13 @@ Note: the `--build` option can be omitted if the service repos have not changed.
 `docker-compose down --volumes`
 
 Note: the `--volumes` option can be omitted to preserve the data between `down` commands
+
+# Running with node debugging enabled
+
+This is an example for how to run with debugging enabled for the notification-api service. The 2nd docker-compose file overrides the values in the first (and so on for subsequent docker-compose files). The debug file starts node using the `--inspect-brk` flag and exposes the debugging port.
+
+To debug any of the other services then create and use an equivilent service specific file. Note that if you need to run debugging for more than one sevice the port mapping will need to use a different external port in the mapping.
+
+`docker-compose -f docker-compose.yml -f docker-compose-notification-api-debug.yml up`
+
+For more details on hooking various debugging clients to the debugging session see [https://nodejs.org/en/docs/guides/debugging-getting-started/]()
