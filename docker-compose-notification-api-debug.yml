@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+
+  notification-api:
+    ports:
+      - "9229:9229"
+    command: sh -c "wait-on tcp:xws-db:5432 && node --inspect-brk=0.0.0.0 index.js"
