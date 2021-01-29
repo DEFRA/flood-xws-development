@@ -5,4 +5,6 @@ services:
   notification-api:
     ports:
       - "9229:9229"
-    command: sh -c "wait-on tcp:xws-db:5432 && node --inspect-brk=0.0.0.0 index.js"
+    volumes:
+      - ../notification-api:/usr/src/app
+    command: sh -c "wait-on tcp:xws-broker:5672 && wait-on tcp:xws-db:5432 && nodemon --inspect-brk=0.0.0.0 index.js"
