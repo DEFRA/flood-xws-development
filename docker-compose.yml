@@ -35,7 +35,7 @@ services:
       PORT: 3000
       HOST: 0.0.0.0
       DB: "postgres://postgres:postgres@xws-db:5432"
-      PUBSUB_URI: "xws-broker:5672"
+      BROKER_URL: "amqp://xws-broker:5672"
     env_file:
       - ../alert-web/.env
     ports:
@@ -56,7 +56,7 @@ services:
       PORT: 3002
       HOST: 0.0.0.0
       DB: "postgres://postgres:postgres@xws-db:5432"
-      PUBSUB_URI: "xws-broker:5672"
+      BROKER_URL: "amqp://xws-broker:5672"
     env_file:
       - ../notification-api/.env
     ports:
@@ -73,15 +73,15 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   xws-broker:
     image: rabbitmq:3-management
     ports:
-      - "5672:5672"
+      # - "5672:5672"
       - "8080:15672"
 
 
