@@ -33,10 +33,35 @@ Note: the `--volumes` option can be omitted to preserve the data between `down` 
 
 # Running with node debugging enabled
 
-This is an example for how to run with debugging enabled for the notification-api service. The 2nd docker-compose file overrides the values in the first (and so on for subsequent docker-compose files). The debug file starts node using the `--inspect-brk` flag and exposes the debugging port.
-
-To debug any of the other services then create and use an equivilent service specific file. Note that if you need to run debugging for more than one sevice the port mapping will need to use a different external port in the mapping.
+This is an example for how to run with debugging enabled for the notification-api service. The 2nd docker-compose file overrides the values in the first (and so on for subsequent docker-compose files). The debug compose file starts node using the `--inspect-brk` flag, exposes the debugging port, bind mounts the source code directory and runs the app using `nodemon` to allow code to be edited outside the container and reloaded on any change. This is to allow for a low friction development experience.
 
 `docker-compose -f docker-compose.yml -f docker-compose-notification-api-debug.yml up`
 
-For more details on hooking various debugging clients to the debugging session see [https://nodejs.org/en/docs/guides/debugging-getting-started/]()
+To debug any of the other services then create and use an equivilent service specific file. Note that if you need to run debugging for more than one sevice at a time then the port mapping will need to use a different external port in the mapping.
+
+## Debugging using Chrome DevTools for Node
+
+After running docker-compose, open a tab in Chrome with the URI `chrome://inspect` and click on 'Open dedicated DevTools for Node'
+
+## Debugging using Visual Studio Code
+
+Add the following attach configuration to your `.vscode/launch.json` file within the service workspace (in this case nofification-api). This will attach VS Code for debugging to the container debug session set up in `docker-compose-notification-api-debug.yml`. The same config should work when added to any other sevice running in debug since typically the node folder structures in the container and debug port exposed are consistent. 
+
+```
+{
+    "name": "Attach",
+    "port": 9229,
+    "request": "attach",
+    "skipFiles": [
+        "<node_internals>/**"
+    ],
+    "type": "node",
+    "localRoot": "${workspaceFolder}",
+    "remoteRoot": "/usr/src/app"
+}
+```
+For more details on tighter integration between node, docker and vs code see [https://code.visualstudio.com/docs/containers/overview]() 
+
+## Debugging using other clients
+
+For more details on hooking other debugging clients to the debugging session see [https://nodejs.org/en/docs/guides/debugging-getting-started/]().
