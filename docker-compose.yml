@@ -1,0 +1,89 @@
+version: "3"
+
+services:
+  contact-web:
+    build:
+      context: ../contact-web
+    image: contact-web
+    depends_on:
+      - xws-db
+      - xws-broker
+    restart: on-failure
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3001
+      HOST: 0.0.0.0
+      DB: "postgres://postgres:postgres@xws-db:5432"
+    env_file:
+      - ../contact-web/.env
+    ports:
+      - "3001:3001"
+    command: sh -c "wait-on tcp:xws-broker:5672 && wait-on tcp:xws-db:5432 && node index.js"
+
+  alert-web:
+    build:
+      context: ../alert-web
+    image: alert-web
+    depends_on:
+      - xws-db
+      - xws-broker
+    restart: on-failure
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3000
+      HOST: 0.0.0.0
+      DB: "postgres://postgres:postgres@xws-db:5432"
+      BROKER_URL: "amqp://xws-broker:5672"
+    env_file:
+      - ../alert-web/.env
+    ports:
+      - "3000:3000"
+    command: sh -c "wait-on tcp:xws-broker:5672 && wait-on tcp:xws-db:5432 && node index.js"
+
+  notification-api:
+    build:
+      context: ../notification-api
+    image: notification-api
+    depends_on:
+      - xws-db
+      - xws-broker
+    restart: on-failure
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3002
+      HOST: 0.0.0.0
+      DB: "postgres://postgres:postgres@xws-db:5432"
+      BROKER_URL: "amqp://xws-broker:5672"
+    env_file:
+      - ../notification-api/.env
+    ports:
+      - "3002:3002"
+    command: sh -c "wait-on tcp:xws-broker:5672 && wait-on tcp:xws-db:5432 && node index.js"
+
+  xws-db:
+    build:
+      context: ../db
+      args:
+        # Note: these data files paths are relative to the context
+        FAA_DATA_FILE: ./area/flood-areas/EA_FloodAlertAreas_SHP_Full.zip
+        FWA_DATA_FILE: ./area/flood-areas/EA_FloodWarningAreas_SHP_Full.zip
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    # ports:
+    #   - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  xws-broker:
+    image: rabbitmq:3-management
+    ports:
+      # - "5672:5672"
+      - "8080:15672"
+
+
+volumes: 
+  pgdata:

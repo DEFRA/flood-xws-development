@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  # Config for debugging notification-api.
+  # Use this as a template for debugging other services.
+  notification-api:
+    ports:
+      - "9229:9229"
+    volumes:
+      - ../notification-api:/usr/src/app
+    command: sh -c "wait-on tcp:xws-broker:5672 && wait-on tcp:xws-db:5432 && nodemon --inspect=0.0.0.0 index.js"
