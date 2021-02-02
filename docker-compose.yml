@@ -68,8 +68,8 @@ services:
       context: ../db
       args:
         # Note: these data files paths are relative to the context
-        FAA_DATA_FILE: ./target-areas/EA_FloodAlertAreas_SHP_Full.zip
-        FWA_DATA_FILE: ./target-areas/EA_FloodWarningAreas_SHP_Full.zip
+        FAA_DATA_FILE: ./area/flood-areas/EA_FloodAlertAreas_SHP_Full.zip
+        FWA_DATA_FILE: ./area/flood-areas/EA_FloodWarningAreas_SHP_Full.zip
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
