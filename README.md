@@ -33,33 +33,56 @@ Note: the `--volumes` option can be omitted to preserve the data between `down` 
 
 # Running with node debugging enabled
 
-This is an example for how to run with debugging enabled for the notification-api service. The 2nd docker-compose file overrides the values in the first (and so on for subsequent docker-compose files). The debug compose file starts node using the `--inspect-brk` flag, exposes the debugging port, bind mounts the source code directory and runs the app using `nodemon` to allow code to be edited outside the container and reloaded on any change. This is to allow for a low friction development experience.
+This is an example for how to run with debugging enabled for a number of services. The 2nd docker-compose file overrides the values in the first (and so on for subsequent docker-compose files). The debug compose file starts node using the `--inspect-brk` flag, exposes the debugging port, bind mounts the source code directory and runs the app using `nodemon` to allow code to be edited outside the container and reloaded on any change. This is to allow for a low friction development experience.
 
-`docker-compose -f docker-compose.yml -f docker-compose-notification-api-debug.yml up`
+`docker-compose -f docker-compose.yml -f docker-compose-debug.yml up`
 
-To debug any of the other services then create and use an equivilent service specific file. Note that if you need to run debugging for more than one sevice at a time then the port mapping will need to use a different external port in the mapping.
+This starts a number of services with the `--inspect` option. See docker-compose-debug.yml for implementation details.
 
 ## Debugging using Chrome DevTools for Node
 
-After running docker-compose, open a tab in Chrome with the URI `chrome://inspect` and click on 'Open dedicated DevTools for Node'
+After running docker-compose, open a tab in Chrome with the URI `chrome://inspect` and click on 'Open dedicated DevTools for Node'. Note: the debug session for each service runs on a different port and these will need adding as a connection in the connections tab of the DevTools for Node.
 
 ## Debugging using Visual Studio Code
 
-Add the following attach configuration to your `.vscode/launch.json` file within the service workspace (in this case nofification-api). This will attach VS Code for debugging to the container debug session set up in `docker-compose-notification-api-debug.yml`. The same config should work when added to any other sevice running in debug since typically the node folder structures in the container and debug port exposed are consistent. 
+Add the following attach configuration to your `.vscode/launch.json` file within the service workspace (in this case the parent directory for the three services). This will attach VS Code for debugging to the container debug session for the service specified in the configuration name. Note that the ports defined for each service come from the port mapping as defined in `docker-compose-debug.yml`. As further services are added they will need their own configuration to be added. Finally, it is possible to launch more than one debug configuration at a time so, for example, it is possible to debug both contact-web and notification-api simultaneously.
 
 ```
 {
-    "name": "Attach",
+    "name": "Attach: contact-web",
+    "port": 9227,
+    "request": "attach",
+    "skipFiles": [
+        "<node_internals>/**"
+    ],
+    "type": "node",
+    "localRoot": "${workspaceFolder}/contact-web",
+    "remoteRoot": "/usr/src/app"
+},
+{
+    "name": "Attach: alert-web",
+    "port": 9228,
+    "request": "attach",
+    "skipFiles": [
+        "<node_internals>/**"
+    ],
+    "type": "node",
+    "localRoot": "${workspaceFolder}/alert-web",
+    "remoteRoot": "/usr/src/app"
+},
+{
+    "name": "Attach: notification-api",
     "port": 9229,
     "request": "attach",
     "skipFiles": [
         "<node_internals>/**"
     ],
     "type": "node",
-    "localRoot": "${workspaceFolder}",
+    "localRoot": "${workspaceFolder}/notification-api",
     "remoteRoot": "/usr/src/app"
 }
 ```
+
 For more details on tighter integration between node, docker and vs code see [https://code.visualstudio.com/docs/containers/overview]() 
 
 ## Debugging using other clients
