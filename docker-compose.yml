@@ -14,7 +14,7 @@ services:
       ENV: local
       PORT: 3001
       HOST: 0.0.0.0
-      DB: "postgres://postgres:postgres@xws-db:5432"
+      DATABASE_URL: "postgres://postgres:postgres@xws-db:5432"
     env_file:
       - ../contact-web/.env
     ports:
@@ -34,7 +34,7 @@ services:
       ENV: local
       PORT: 3000
       HOST: 0.0.0.0
-      DB: "postgres://postgres:postgres@xws-db:5432"
+      DATABASE_URL: "postgres://postgres:postgres@xws-db:5432"
       BROKER_URL: "amqp://xws-broker:5672"
     env_file:
       - ../alert-web/.env
@@ -55,7 +55,7 @@ services:
       ENV: local
       PORT: 3002
       HOST: 0.0.0.0
-      DB: "postgres://postgres:postgres@xws-db:5432"
+      DATABASE_URL: "postgres://postgres:postgres@xws-db:5432"
       BROKER_URL: "amqp://xws-broker:5672"
     env_file:
       - ../notification-api/.env
