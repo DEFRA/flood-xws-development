@@ -17,21 +17,19 @@ Notes:
 * `.env` files should not be committed to the service repository.
 * `.env` files should not be used in production.
 
-# Running the services with local instances of the backing services
+# Running all the services along with the backing services
 
 `docker-compose up --build`
 
-Each of the services will then be available at http://localhost:{port} (see docker-compose for which port corresponds to which service)
+Each of the services and backing services will then be available at http://localhost:{port} (see docker-compose for which port corresponds to which service) 
 
 Note: the `--build` option can be omitted if the service repos have not changed.
 
-# Running the services with AWS instances of the backing services
+# Running a subset of the services 
 
-`docker-compose up -f docker-compose-backing-services.yml --build`
+`docker-compose up [service...]`
 
-Each of the services will then be available at http://localhost:{port} (see docker-compose for which port corresponds to which service)
-
-Note: the `--build` option can be omitted if the service repos have not changed.
+This will start the specified services and any dependant services (e.g. `docker-compose up contact-web` or `docker-compose up db message-broker`). The service names come from the docker compose file. This is not expected to be a common scenario.
 
 # Stopping the services
 
