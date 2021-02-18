@@ -6,18 +6,18 @@ services:
       - "9227:9229"
     volumes:
       - ../contact-web:/usr/src/app
-    command: sh -c "wait-on tcp:xws-broker:5672 && wait-on tcp:xws-db:5432 && nodemon --inspect=0.0.0.0 index.js"
+    command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && nodemon --inspect=0.0.0.0 index.js"
 
   alert-web:
     ports:
       - "9228:9229"
     volumes:
       - ../alert-web:/usr/src/app
-    command: sh -c "wait-on tcp:xws-broker:5672 && wait-on tcp:xws-db:5432 && nodemon --inspect=0.0.0.0 index.js"
+    command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && nodemon --inspect=0.0.0.0 index.js"
 
   notification-api:
     ports:
       - "9229:9229"
     volumes:
       - ../notification-api:/usr/src/app
-    command: sh -c "wait-on tcp:xws-broker:5672 && wait-on tcp:xws-db:5432 && nodemon --inspect=0.0.0.0 index.js"
+    command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && nodemon --inspect=0.0.0.0 index.js"
