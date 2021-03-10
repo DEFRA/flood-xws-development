@@ -21,6 +21,27 @@ services:
       - "3001:3001"
     command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && node index.js"
 
+  contact-api:
+    build:
+      context: ../contact-api
+    image: contact-api
+    depends_on:
+      - db
+      - message-broker
+    restart: on-failure
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3003
+      HOST: 0.0.0.0
+      DATABASE_URL: "postgres://postgres:postgres@db:5432"
+      BROKER_URL: "amqp://message-broker:5672"
+    env_file:
+      - ../contact-api/.env
+    ports:
+      - "3003:3003"
+    command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && node index.js"
+
   alert-web:
     build:
       context: ../alert-web
