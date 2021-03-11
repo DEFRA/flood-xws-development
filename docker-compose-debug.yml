@@ -21,3 +21,11 @@ services:
     volumes:
       - ../notification-api:/usr/src/app
     command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && nodemon --inspect=0.0.0.0 index.js"
+
+  area-api:
+    ports:
+      - "9230:9229"
+    volumes:
+      - ../area-api:/usr/src/app
+    command: sh -c "wait-on tcp:db:5432 && nodemon --inspect=0.0.0.0 index.js"
+

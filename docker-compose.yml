@@ -6,6 +6,7 @@ services:
       context: ../contact-web
     image: contact-web
     depends_on:
+      - contact-api
       - db
       - message-broker
     restart: on-failure
@@ -15,6 +16,8 @@ services:
       PORT: 3001
       HOST: 0.0.0.0
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
+      AREA_URL: "http://area-api:3004/areas"
+      API_URL: "http://contact-api:3003/subscriptions"
     env_file:
       - ../contact-web/.env
     ports:
@@ -41,6 +44,25 @@ services:
     ports:
       - "3003:3003"
     command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && node index.js"
+
+  area-api:
+    build:
+      context: ../area-api
+    image: area-api
+    depends_on:
+      - db
+    restart: on-failure
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3004
+      HOST: 0.0.0.0
+      DATABASE_URL: "postgres://postgres:postgres@db:5432"
+    env_file:
+      - ../area-api/.env
+    ports:
+      - "3004:3004"
+    command: sh -c "wait-on tcp:db:5432 && node index.js"
 
   alert-web:
     build:
