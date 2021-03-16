@@ -6,6 +6,7 @@ services:
       context: ../contact-web
     image: contact-web
     depends_on:
+      - contact-api-2
       - contact-api
       - area-api
       - db
@@ -18,6 +19,8 @@ services:
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
       AREA_URL: "http://area-api:3004/areas"
       API_URL: "http://contact-api:3003/subscriptions"
+      SUBSCRIPTION_GET_URL: "http://contact-api-2:3000/subscription?id=eq.{subscriptionId}"
+      SUBSCRIPTIONS_GET_URL: "http://contact-api-2:3000/contact?select=*,subscription(*)&id=eq.{contactId}"
     env_file:
       - ../contact-web/.env
     ports:
@@ -105,6 +108,20 @@ services:
     ports:
       - "3002:3002"
     command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && node index.js"
+
+
+
+
+  contact-api-2:
+    image: postgrest/postgrest
+    ports:
+      - "3005:3000"
+    environment:
+      PGRST_DB_URI:  "postgres://postgres:postgres@db:5432"
+      PGRST_DB_SCHEMA: xws_contact
+      PGRST_DB_ANON_ROLE: postgres
+    depends_on:
+      - db
 
   db:
     build:
