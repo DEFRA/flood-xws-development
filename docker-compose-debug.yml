@@ -8,13 +8,6 @@ services:
       - ../contact-web:/usr/src/app
     command: sh -c "wait-on tcp:db:5432 && nodemon --inspect=0.0.0.0 index.js"
 
-  contact-api:
-    ports:
-      - "9231:9229"
-    volumes:
-      - ../contact-api:/usr/src/app
-    command: sh -c "wait-on tcp:db:5432 && nodemon --inspect=0.0.0.0 index.js"
-
   # alert-web:
   #   ports:
   #     - "9228:9229"

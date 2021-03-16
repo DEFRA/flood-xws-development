@@ -6,7 +6,6 @@ services:
       context: ../contact-web
     image: contact-web
     depends_on:
-      - contact-api-2
       - contact-api
       - area-api
       - db
@@ -18,35 +17,16 @@ services:
       HOST: 0.0.0.0
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
       AREA_URL: "http://area-api:3004/areas"
-      API_URL: "http://contact-api:3003/subscriptions"
-      SUBSCRIPTION_GET_URL: "http://contact-api-2:3000/subscription?id=eq.{subscriptionId}"
-      SUBSCRIPTIONS_GET_URL: "http://contact-api-2:3000/contact?select=*,subscription(*)&id=eq.{contactId}"
+      SUBSCRIPTION_POST_URL: "http://contact-api:3000/subscription"
+      SUBSCRIPTION_PATCH_URL: "http://contact-api:3000/subscription?id=eq.{subscriptionId}"
+      SUBSCRIPTION_GET_URL: "http://contact-api:3000/subscription?id=eq.{subscriptionId}"
+      SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.{subscriptionId}"
+      CONTACT_SUBSCRIPTION_GET_URL: "http://contact-api:3000/contact?select=*,subscription(*)&id=eq.{contactId}"
     env_file:
       - ../contact-web/.env
     ports:
       - "3001:3001"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
-
-  contact-api:
-    build:
-      context: ../contact-api
-    image: contact-api
-    depends_on:
-      - db
-      - message-broker
-    restart: on-failure
-    environment:
-      NODE_ENV: dev
-      ENV: local
-      PORT: 3003
-      HOST: 0.0.0.0
-      DATABASE_URL: "postgres://postgres:postgres@db:5432"
-      BROKER_URL: "amqp://message-broker:5672"
-    env_file:
-      - ../contact-api/.env
-    ports:
-      - "3003:3003"
-    command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && node index.js"
 
   area-api:
     build:
@@ -112,7 +92,7 @@ services:
 
 
 
-  contact-api-2:
+  contact-api:
     image: postgrest/postgrest
     ports:
       - "3005:3000"
