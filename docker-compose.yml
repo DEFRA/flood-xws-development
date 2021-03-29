@@ -7,6 +7,7 @@ services:
     image: contact-web
     depends_on:
       - contact-api
+      - contact-api-2
       - area-api
       - db
     restart: on-failure
@@ -17,11 +18,13 @@ services:
       HOST: 0.0.0.0
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
       AREA_URL: "http://area-api:3004/areas"
-      SUBSCRIPTION_POST_URL: "http://contact-api:3000/subscription"
-      SUBSCRIPTION_PATCH_URL: "http://contact-api:3000/subscription?id=eq.{subscriptionId}"
-      SUBSCRIPTION_GET_URL: "http://contact-api:3000/subscription?id=eq.{subscriptionId}"
-      SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.{subscriptionId}"
-      CONTACT_SUBSCRIPTION_GET_URL: "http://contact-api:3000/contact?select=*,subscription(*)&id=eq.{contactId}"
+      # SUBSCRIPTION_PATCH_URL: "http://contact-api-2:3003/subscriptions/$${subscriptionId}"
+      SUBSCRIPTION_PATCH_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
+      # SUBSCRIPTION_POST_URL: "http://contact-api:3000/subscription"
+      SUBSCRIPTION_POST_URL: "http://contact-api-2:3003/subscriptions"
+      SUBSCRIPTION_GET_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
+      SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
+      CONTACT_SUBSCRIPTION_GET_URL: "http://contact-api:3000/contact?select=*,subscription(*,area(*))&id=eq.$${contactId}"
     env_file:
       - ../contact-web/.env
     ports:
@@ -89,8 +92,26 @@ services:
       - "3002:3002"
     command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && node index.js"
 
-
-
+  contact-api-2:
+    build:
+      context: ../contact-api
+    image: contact-api
+    depends_on:
+      - db
+      - contact-api
+    restart: on-failure
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3003
+      HOST: 0.0.0.0
+      CONTACT_GET_URL: "http://contact-api:3000/contact?id=eq.$${contactId}"
+      SUBSCRIPTION_POST_URL: "http://contact-api:3000/subscription"
+    env_file:
+      - ../contact-api/.env
+    ports:
+      - "3003:3003"
+    command: sh -c "wait-on tcp:db:5432 && node index.js"
 
   contact-api:
     image: postgrest/postgrest
@@ -98,7 +119,8 @@ services:
       - "3005:3000"
     environment:
       PGRST_DB_URI:  "postgres://postgres:postgres@db:5432"
-      PGRST_DB_SCHEMA: xws_contact
+      PGRST_DB_SCHEMA: xws_rest
+      # In production this role should not be the same as the one used for the connection
       PGRST_DB_ANON_ROLE: postgres
     depends_on:
       - db
