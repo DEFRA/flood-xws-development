@@ -18,9 +18,7 @@ services:
       HOST: 0.0.0.0
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
       AREA_URL: "http://area-api:3004/areas"
-      # SUBSCRIPTION_PATCH_URL: "http://contact-api-2:3003/subscriptions/$${subscriptionId}"
       SUBSCRIPTION_PATCH_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
-      # SUBSCRIPTION_POST_URL: "http://contact-api:3000/subscription"
       SUBSCRIPTION_POST_URL: "http://contact-api-2:3003/subscriptions"
       SUBSCRIPTION_GET_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
       SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
