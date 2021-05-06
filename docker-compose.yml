@@ -54,7 +54,6 @@ services:
     image: alert-web
     depends_on:
       - db
-      - message-broker
     restart: on-failure
     environment:
       NODE_ENV: dev
@@ -62,33 +61,11 @@ services:
       PORT: 3000
       HOST: 0.0.0.0
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
-      BROKER_URL: "amqp://message-broker:5672"
     env_file:
       - ../alert-web/.env
     ports:
       - "3000:3000"
-    command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && node index.js"
-
-  notification-api:
-    build:
-      context: ../notification-api
-    image: notification-api
-    depends_on:
-      - db
-      - message-broker
-    restart: on-failure
-    environment:
-      NODE_ENV: dev
-      ENV: local
-      PORT: 3002
-      HOST: 0.0.0.0
-      DATABASE_URL: "postgres://postgres:postgres@db:5432"
-      BROKER_URL: "amqp://message-broker:5672"
-    env_file:
-      - ../notification-api/.env
-    ports:
-      - "3002:3002"
-    command: sh -c "wait-on tcp:message-broker:5672 && wait-on tcp:db:5432 && node index.js"
+    command: sh -c "wait-on tcp:db:5432 && node index.js"
 
   contact-api-2:
     build:
@@ -133,12 +110,6 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-
-  message-broker:
-    image: rabbitmq:3-management
-    ports:
-      # - "5672:5672"
-      - "8080:15672"
 
 volumes: 
   pgdata:
