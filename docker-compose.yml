@@ -3,7 +3,7 @@ version: "3"
 services:
   contact-web:
     build:
-      context: ../contact-web
+      context: ../flood-xws-contact-web
     image: contact-web
     depends_on:
       - contact-api
@@ -24,14 +24,14 @@ services:
       SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
       CONTACT_SUBSCRIPTION_GET_URL: "http://contact-api:3000/contact?select=*,subscription(*,area(*))&id=eq.$${contactId}"
     env_file:
-      - ../contact-web/.env
+      - ../flood-xws-contact-web/.env
     ports:
       - "3001:3001"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
 
   area-api:
     build:
-      context: ../area-api
+      context: ../flood-xws-area-api
     image: area-api
     depends_on:
       - db
@@ -43,14 +43,14 @@ services:
       HOST: 0.0.0.0
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
     env_file:
-      - ../area-api/.env
+      - ../flood-xws-area-api/.env
     ports:
       - "3004:3004"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
 
   alert-web:
     build:
-      context: ../alert-web
+      context: ../flood-xws-alert-web
     image: alert-web
     depends_on:
       - db
@@ -62,14 +62,14 @@ services:
       HOST: 0.0.0.0
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
     env_file:
-      - ../alert-web/.env
+      - ../flood-xws-alert-web/.env
     ports:
       - "3000:3000"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
 
   contact-api-2:
     build:
-      context: ../contact-api
+      context: ../flood-xws-contact-api
     image: contact-api
     depends_on:
       - db
@@ -83,7 +83,7 @@ services:
       CONTACT_GET_URL: "http://contact-api:3000/contact?id=eq.$${contactId}"
       SUBSCRIPTION_POST_URL: "http://contact-api:3000/subscription"
     env_file:
-      - ../contact-api/.env
+      - ../flood-xws-contact-api/.env
     ports:
       - "3003:3003"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
@@ -112,7 +112,7 @@ services:
 
   db:
     build:
-      context: ../db
+      context: ../flood-xws-db
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
