@@ -5,8 +5,8 @@ services:
     ports:
       - "9227:9229"
     volumes:
-      - ../contact-web:/usr/src/app
-    command: sh -c "wait-on tcp:db:5432 && nodemon --inspect=0.0.0.0 index.js"
+      - ../flood-xws-contact-web:/usr/src/app
+    command: sh -c "nodemon --inspect-brk=0.0.0.0 index.js"
 
   # alert-web:
   #   ports:
