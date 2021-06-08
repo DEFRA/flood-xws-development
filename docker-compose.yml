@@ -6,8 +6,8 @@ services:
       context: ../flood-xws-contact-web
     image: contact-web
     depends_on:
+      - contact-rest-api
       - contact-api
-      - contact-api-2
       - area-api
       - db
     restart: on-failure
@@ -16,18 +16,19 @@ services:
       ENV: local
       PORT: 3001
       HOST: 0.0.0.0
-      DATABASE_URL: "postgres://postgres:postgres@db:5432"
       AREA_URL: "http://area-api:3004/areas"
-      SUBSCRIPTION_PATCH_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
-      SUBSCRIPTION_POST_URL: "http://contact-api-2:3003/subscriptions"
-      SUBSCRIPTION_GET_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
-      SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
-      CONTACT_SUBSCRIPTION_GET_URL: "http://contact-api:3000/contact?select=*,subscription(*,area(*))&id=eq.$${contactId}"
+      SUBSCRIPTION_PATCH_URL: "http://contact-rest-api:3000/subscription?id=eq.$${subscriptionId}"
+      SUBSCRIPTION_POST_URL: "http://contact-api:3003/subscriptions"
+      SUBSCRIPTION_GET_URL: "http://contact-rest-api:3000/subscription?id=eq.$${subscriptionId}"
+      SUBSCRIPTION_DELETE_URL: "http://contact-rest-api:3000/subscription?id=eq.$${subscriptionId}"
+      CONTACT_SUBSCRIPTION_GET_URL: "http://contact-rest-api:3000/contact?select=*,subscription(*,area(*))&id=eq.$${contactId}"
+      CONTACT_GET_URL: "http://contact-rest-api:3000/contact?value=eq.$${value}"
+      CONTACT_POST_URL: "http://contact-rest-api:3000/contact"
     env_file:
       - ../flood-xws-contact-web/.env
     ports:
       - "3001:3001"
-    command: sh -c "wait-on tcp:db:5432 && node index.js"
+    command: sh -c "node index.js"
 
   area-api:
     build:
@@ -67,21 +68,21 @@ services:
       - "3000:3000"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
 
-  contact-api-2:
+  contact-api:
     build:
       context: ../flood-xws-contact-api
     image: contact-api
     depends_on:
       - db
-      - contact-api
+      - contact-rest-api
     restart: on-failure
     environment:
       NODE_ENV: dev
       ENV: local
       PORT: 3003
       HOST: 0.0.0.0
-      CONTACT_GET_URL: "http://contact-api:3000/contact?id=eq.$${contactId}"
-      SUBSCRIPTION_POST_URL: "http://contact-api:3000/subscription"
+      CONTACT_GET_URL: "http://contact-rest-api:3000/contact?id=eq.$${contactId}"
+      SUBSCRIPTION_POST_URL: "http://contact-rest-api:3000/subscription"
     env_file:
       - ../flood-xws-contact-api/.env
     ports:
@@ -91,7 +92,7 @@ services:
   swagger:
     image: swaggerapi/swagger-ui
     depends_on:
-      - contact-api
+      - contact-rest-api
     ports:
       - "8080:8080"
     expose:
@@ -99,7 +100,7 @@ services:
     environment:
       API_URL: "http://localhost:3005"
 
-  contact-api:
+  contact-rest-api:
     image: postgrest/postgrest
     ports:
       - "3005:3000"
