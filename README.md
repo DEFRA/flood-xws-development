@@ -37,6 +37,15 @@ This will start the specified services and any dependant services (e.g. `docker-
 
 Note: the `--volumes` option can be omitted to preserve the data between `down` commands
 
+# Running tests for a service
+
+`docker compose run [--volumes ...] {service-name} npm test`
+
+e.g. `docker compose run --volumes ./contact-web-reports:/usr/src/app/reports contact-web npm test`
+
+Note: the volume mount is optional, needs to be created before running the command and makes the report
+available after the test run
+
 # Running with node debugging enabled
 
 This is an example for how to run with debugging enabled for a number of services. The 2nd docker-compose file overrides the values in the first (and so on for subsequent docker-compose files). The debug compose file starts node using the `--inspect-brk` flag, exposes the debugging port, bind mounts the source code directory and runs the app using `nodemon` to allow code to be edited outside the container and reloaded on any change. This is to allow for a low friction development experience.
