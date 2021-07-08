@@ -9,7 +9,6 @@ services:
       - subscription-api
       - contact-api
       - area-api
-      - db
     restart: on-failure
     environment:
       NODE_ENV: dev
@@ -81,9 +80,8 @@ services:
   subscription-api:
     build:
       context: ../flood-xws-subscription-api
-    image: contact-api
+    image: subscription-api
     depends_on:
-      - db
       - contact-api
     restart: on-failure
     environment:
@@ -97,7 +95,7 @@ services:
       - ../flood-xws-config/flood-xws-subscription-api/local.env
     ports:
       - "3003:3003"
-    command: sh -c "wait-on tcp:db:5432 && node index.js"
+    command: sh -c "node index.js"
 
   swagger:
     image: swaggerapi/swagger-ui
