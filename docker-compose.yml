@@ -19,12 +19,10 @@ services:
       PHASE_BANNER_TAG: "local"
       PHASE_BANNER_HTML: "This is a TEST service - you will not recieve alerts"
       AREA_URL: "http://area-api:3004/areas"
-      SUBSCRIPTION_GET_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
-      SUBSCRIPTION_PATCH_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
-      SUBSCRIPTION_POST_URL: "http://subscription-api:3003/subscriptions"
-      SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
-      CONTACT_POST_URL: "http://contact-api:3000/contact"
+      SUBSCRIPTION_GET_URL: "http://subscription-api:3003/subscription/$${subscriptionId}"
+      SUBSCRIPTION_POST_URL: "http://subscription-api:3003/subscription"
       CONTACT_GET_URL: "http://contact-api:3000/contact?value=eq.$${value}"
+      CONTACT_POST_URL: "http://contact-api:3000/contact"
       CONTACT_SUBSCRIPTION_GET_URL: "http://contact-api:3000/contact?id=eq.$${contactId}&select=*,subscription(*,area(*))"
     env_file:
       - ../flood-xws-config/flood-xws-contact-web/local.env
@@ -91,6 +89,9 @@ services:
       HOST: 0.0.0.0
       CONTACT_GET_URL: "http://contact-api:3000/contact?id=eq.$${contactId}"
       SUBSCRIPTION_POST_URL: "http://contact-api:3000/subscription"
+      SUBSCRIPTION_GET_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
+      SUBSCRIPTION_PATCH_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
+      SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
     env_file:
       - ../flood-xws-config/flood-xws-subscription-api/local.env
     ports:
