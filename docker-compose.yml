@@ -6,7 +6,7 @@ services:
       context: ../flood-xws-contact-web
     image: contact-web
     depends_on:
-      - contact-rest-api
+      - subscription-api
       - contact-api
       - area-api
       - db
@@ -16,16 +16,19 @@ services:
       ENV: local
       PORT: 3001
       HOST: 0.0.0.0
+      COOKIE_IS_SECURE: "false"
+      PHASE_BANNER_TAG: "local"
+      PHASE_BANNER_HTML: "This is a TEST service - you will not recieve alerts"
       AREA_URL: "http://area-api:3004/areas"
-      SUBSCRIPTION_PATCH_URL: "http://contact-rest-api:3000/subscription?id=eq.$${subscriptionId}"
-      SUBSCRIPTION_POST_URL: "http://contact-api:3003/subscriptions"
-      SUBSCRIPTION_GET_URL: "http://contact-rest-api:3000/subscription?id=eq.$${subscriptionId}"
-      SUBSCRIPTION_DELETE_URL: "http://contact-rest-api:3000/subscription?id=eq.$${subscriptionId}"
-      CONTACT_SUBSCRIPTION_GET_URL: "http://contact-rest-api:3000/contact?select=*,subscription(*,area(*))&id=eq.$${contactId}"
-      CONTACT_GET_URL: "http://contact-rest-api:3000/contact?value=eq.$${value}"
-      CONTACT_POST_URL: "http://contact-rest-api:3000/contact"
+      SUBSCRIPTION_GET_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
+      SUBSCRIPTION_PATCH_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
+      SUBSCRIPTION_POST_URL: "http://subscription-api:3003/subscriptions"
+      SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
+      CONTACT_POST_URL: "http://contact-api:3000/contact"
+      CONTACT_GET_URL: "http://contact-api:3000/contact?value=eq.$${value}"
+      CONTACT_SUBSCRIPTION_GET_URL: "http://contact-api:3000/contact?id=eq.$${contactId}&select=*,subscription(*,area(*))"
     env_file:
-      - ../flood-xws-contact-web/.env
+      - ../flood-xws-config/flood-xws-contact-web/local.env
     ports:
       - "3001:3001"
     command: sh -c "node index.js"
@@ -44,7 +47,7 @@ services:
       HOST: 0.0.0.0
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
     env_file:
-      - ../flood-xws-area-api/.env
+      - ../flood-xws-config/flood-xws-area-api/local.env
     ports:
       - "3004:3004"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
@@ -61,30 +64,37 @@ services:
       ENV: local
       PORT: 3000
       HOST: 0.0.0.0
+      FORCE_HTTPS: "false"
+      COOKIE_IS_SECURE: "false"
+      HOME_PAGE: "http://localhost:3000"
+      DOCUMENTATION_HOME_PAGE: "http://localhost:3000/documentation"
+      PHASE_BANNER_TAG: "local"
+      PHASE_BANNER_HTML: "This is a TEST service - you will not issue alerts"
+      BUCKET_NAME: "xws-files-dev"
       DATABASE_URL: "postgres://postgres:postgres@db:5432"
     env_file:
-      - ../flood-xws-alert-web/.env
+      - ../flood-xws-config/flood-xws-alert-web/local.env
     ports:
       - "3000:3000"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
 
-  contact-api:
+  subscription-api:
     build:
-      context: ../flood-xws-contact-api
+      context: ../flood-xws-subscription-api
     image: contact-api
     depends_on:
       - db
-      - contact-rest-api
+      - contact-api
     restart: on-failure
     environment:
       NODE_ENV: dev
       ENV: local
       PORT: 3003
       HOST: 0.0.0.0
-      CONTACT_GET_URL: "http://contact-rest-api:3000/contact?id=eq.$${contactId}"
-      SUBSCRIPTION_POST_URL: "http://contact-rest-api:3000/subscription"
+      CONTACT_GET_URL: "http://contact-api:3000/contact?id=eq.$${contactId}"
+      SUBSCRIPTION_POST_URL: "http://contact-api:3000/subscription"
     env_file:
-      - ../flood-xws-contact-api/.env
+      - ../flood-xws-config/flood-xws-subscription-api/local.env
     ports:
       - "3003:3003"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
@@ -92,7 +102,7 @@ services:
   swagger:
     image: swaggerapi/swagger-ui
     depends_on:
-      - contact-rest-api
+      - subscription-api
     ports:
       - "8080:8080"
     expose:
@@ -100,7 +110,7 @@ services:
     environment:
       API_URL: "http://localhost:3005"
 
-  contact-rest-api:
+  contact-api:
     image: postgrest/postgrest
     ports:
       - "3005:3000"
