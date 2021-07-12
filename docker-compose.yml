@@ -19,11 +19,8 @@ services:
       PHASE_BANNER_TAG: "local"
       PHASE_BANNER_HTML: "This is a TEST service - you will not recieve alerts"
       AREA_URL: "http://area-api:3004/areas"
-      SUBSCRIPTION_GET_URL: "http://subscription-api:3003/subscription/$${subscriptionId}"
-      SUBSCRIPTION_POST_URL: "http://subscription-api:3003/subscription"
-      CONTACT_GET_URL: "http://contact-api:3000/contact?value=eq.$${value}"
-      CONTACT_POST_URL: "http://contact-api:3000/contact"
-      CONTACT_SUBSCRIPTION_GET_URL: "http://contact-api:3000/contact?id=eq.$${contactId}&select=*,subscription(*,area(*))"
+      SUBSCRIPTION_RESOURCE: "http://subscription-api:3003/subscription"
+      CONTACT_RESOURCE: "http://contact-api:3000/contact"
     env_file:
       - ../flood-xws-config/flood-xws-contact-web/local.env
     ports:
