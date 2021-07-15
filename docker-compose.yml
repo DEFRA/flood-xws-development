@@ -19,8 +19,7 @@ services:
       PHASE_BANNER_TAG: "local"
       PHASE_BANNER_HTML: "This is a TEST service - you will not recieve alerts"
       AREA_URL: "http://area-api:3004/areas"
-      SUBSCRIPTION_RESOURCE: "http://subscription-api:3003/subscription"
-      CONTACT_RESOURCE: "http://contact-api:3000/contact"
+      CONTACT_SERVICE: "http://nginx:4000"
     env_file:
       - ../flood-xws-config/flood-xws-contact-web/local.env
     ports:
@@ -72,6 +71,19 @@ services:
       - "3000:3000"
     command: sh -c "wait-on tcp:db:5432 && node index.js"
 
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - subscription-api
+      - contact-api
+    restart: on-failure
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - pspdfkit
+    ports:
+      - "4000:4000"
+
   subscription-api:
     build:
       context: ../flood-xws-subscription-api
@@ -91,8 +103,8 @@ services:
       SUBSCRIPTION_DELETE_URL: "http://contact-api:3000/subscription?id=eq.$${subscriptionId}"
     env_file:
       - ../flood-xws-config/flood-xws-subscription-api/local.env
-    ports:
-      - "3003:3003"
+    # ports:
+    #   - "3003:3003"
     command: sh -c "node index.js"
 
   swagger:
