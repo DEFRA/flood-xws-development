@@ -1,0 +1,97 @@
+version: "3"
+
+services:
+
+  contact-web:
+    # repo: https://github.com/DEFRA/flood-xws-contact-web
+    build:
+      context: ../flood-xws-contact-web
+    image: contact-web
+    depends_on:
+      - subscription-api
+      - contact-api
+      - area-api
+    networks:
+      - contact-stack
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3001
+      HOST: 0.0.0.0
+      COOKIE_IS_SECURE: "false"
+      COOKIE_PASSWORD: "contact_web_dhfvbvhbhfhweru49q4vkhgjghsjkghrh84t9tyv3bhglsru"
+      HTTP_TIMEOUT_MS: 10000
+      PHASE_BANNER_TAG: "Local"
+      PHASE_BANNER_HTML: "This is a TEST service - you will not recieve alerts"
+      AREA_RESOURCE: "http://area-api:3004/area"
+      SUBSCRIPTION_RESOURCE: "http://subscription-api:3003/subscription"
+      CONTACT_RESOURCE: "http://contact-api:3000/contact"
+    env_file:
+      - ../flood-xws-config/flood-xws-contact-web/local.env
+    ports:
+      - "3001:3001"
+    command: sh -c "node index.js"
+
+  area-api:
+    # repo: https://github.com/DEFRA/flood-xws-area-api
+    build:
+      context: ../flood-xws-area-api
+    image: area-api
+    networks:
+      - contact-stack
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3004
+      HOST: 0.0.0.0
+      DATABASE_URL: "postgres://postgres:postgres@contact-db:5432"
+    command: sh -c "node index.js"
+
+  subscription-api:
+    # repo: https://github.com/DEFRA/flood-xws-subscription-api
+    build:
+      context: ../flood-xws-subscription-api
+    image: subscription-api
+    networks:
+      - contact-stack
+    depends_on:
+      - contact-api
+    environment:
+      NODE_ENV: dev
+      ENV: local
+      PORT: 3003
+      HOST: 0.0.0.0
+      CONTACT_RESOURCE: "http://contact-api:3000/contact"
+      SUBSCRIPTION_RESOURCE: "http://contact-api:3000/subscription"
+    env_file:
+      - ../flood-xws-config/flood-xws-subscription-api/local.env
+    command: sh -c "node index.js"
+
+  contact-api:
+    image: postgrest/postgrest
+    networks:
+      - contact-stack
+    environment:
+      PGRST_DB_URI:  "postgres://authenticator:authenticator@contact-db:5432/postgres"
+      PGRST_DB_SCHEMA: xws_rest
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_SERVER_PORT: 3000
+    depends_on:
+      - contact-db
+
+  contact-db:
+    networks:
+      - contact-stack
+    build:
+      context: ../flood-xws-db
+    image: contact-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+networks:
+  contact-stack:
+volumes:
+  pgdata:
