@@ -48,7 +48,7 @@ services:
       - ../flood-xws-config/flood-xws-area-api/local.env
     ports:
       - "3004:3004"
-    command: sh -c "wait-on tcp:db:5432 && node index.js"
+    command: sh -c "wait-on tcp:contact-db:5432 && node index.js"
 
   alert-web:
     build:
