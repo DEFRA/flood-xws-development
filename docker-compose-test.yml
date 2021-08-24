@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  area-api:
+    ports:
+      - "9229:9229"
+    volumes:
+      - ../area-api:/usr/src/app
+    command: sh -c "wait-on tcp:contact-db:5432 && nodemon --inspect=0.0.0.0 index.js"
