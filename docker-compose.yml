@@ -13,8 +13,7 @@ services:
       - contact-stack
     restart: on-failure
     environment:
-      NODE_ENV: dev
-      ENV: local
+      NODE_ENV: local
       PORT: 3001
       HOST: 0.0.0.0
       COOKIE_IS_SECURE: "false"
