@@ -19,11 +19,11 @@ count: 1       # Number of tasks that should be running in your service.
 exec: true     # Enable running commands in your container.
 
 variables:
-  NODE_ENV: local
   PORT: 3004
   HOST: 0.0.0.0
 
 environments:
   test:
     variables:
+      NODE_ENV: test
       DATABASE_URL: "postgres://postgres:postgres@xws-db.test.flood-xws-contact.local/postgres"
