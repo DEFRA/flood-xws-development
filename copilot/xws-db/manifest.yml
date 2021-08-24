@@ -21,10 +21,4 @@ exec: true     # Enable running commands in your container.
 
 variables:
   POSTGRES_USER: postgres
-secrets:
-  POSTGRES_PASSWORD: /flood-xws-contact/test/POSTGRES_PASSWORD
-
-# You can override any of the values defined above by environment.
-#environments:
-#  test:
-#    count: 2               # Number of tasks to run for the "test" environment.
+  POSTGRES_PASSWORD: postgres
