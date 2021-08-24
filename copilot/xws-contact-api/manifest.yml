@@ -20,22 +20,11 @@ count: 1       # Number of tasks that should be running in your service.
 exec: true     # Enable running commands in your container.
 
 variables:
-  #Note: hard coded service discovery value (flood-xws-contact.local)
-  #      should use the env var COPILOT_SERVICE_DISCOVERY_ENDPOINT
   PGRST_DB_SCHEMA: xws_rest
   PGRST_DB_ANON_ROLE: web_anon
   PGRST_SERVER_PORT: 3000
-  PGRST_DB_URI: "postgres://authenticator:U5XKDJvdOZktUc8B@xws-db.test.flood-xws-contact.local/postgres"
 
-# Optional fields for more advanced use-cases.
-#
-#variables:                    # Pass environment variables as key value pairs.
-#  LOG_LEVEL: info
-
-#secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
-#  GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.
-
-# You can override any of the values defined above by environment.
-#environments:
-#  test:
-#    count: 2               # Number of tasks to run for the "test" environment.
+environments:
+  test:
+    variables:
+      PGRST_DB_URI: "postgres://authenticator:U5XKDJvdOZktUc8B@xws-db.test.flood-xws-contact.local/postgres"
