@@ -20,8 +20,7 @@ count: 1       # Number of tasks that should be running in your service.
 exec: true     # Enable running commands in your container.
 
 variables:
-  NODE_ENV: dev
-  ENV: local
+  NODE_ENV: local
   PORT: 3003
   HOST: 0.0.0.0
   CONTACT_RESOURCE: "http://xws-contact-api.test.flood-xws-contact.local:3000/contact"

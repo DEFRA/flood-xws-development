@@ -27,8 +27,7 @@ count: 1       # Number of tasks that should be running in your service.
 exec: true     # Enable running commands in your container.
 
 variables:
-  NODE_ENV: dev
-  ENV: test
+  NODE_ENV: development
   PORT: 3001
   HOST: 0.0.0.0
   COOKIE_IS_SECURE: "false"
