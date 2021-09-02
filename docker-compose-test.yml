@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  contact-web:
+    ports:
+      - "9229:9229"
+    volumes:
+      - ../flood-xws-contact-web:/usr/src/app
+    command: sh -c "npm test"
+  contact-api:
+    ports:
+      - "3000:3000"

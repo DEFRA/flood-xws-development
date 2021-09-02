@@ -43,7 +43,9 @@ services:
       ENV: local
       PORT: 3004
       HOST: 0.0.0.0
-      DATABASE_URL: "postgres://postgres:postgres@contact-db:5432"
+      DATABASE_URL: "postgres://postgres:postgres@area-db:5432"
+    ports:
+      - "3004:3004"
     command: sh -c "node index.js"
 
   subscription-api:
@@ -80,7 +82,7 @@ services:
 
   contact-db:
     build:
-      context: ../flood-xws-db
+      context: ../flood-xws-contact-db
     image: contact-db
     networks:
       - contact-stack
@@ -88,9 +90,24 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - contact-pgdata:/var/lib/postgresql/data
+
+  area-db:
+    build:
+      context: ../flood-xws-area-db
+    image: area-db
+    networks:
+      - contact-stack
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - "5402:5432"
+    volumes:
+      - area-pgdata:/var/lib/postgresql/data
 
 networks:
   contact-stack:
 volumes:
-  pgdata:
+  contact-pgdata:
+  area-pgdata:
