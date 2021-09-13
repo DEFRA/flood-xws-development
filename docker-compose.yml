@@ -120,16 +120,16 @@ services:
 
   alert-db:
     build:
-      context: ../flood-xws-db
-    image: contact-db
+      context: ../flood-xws-alert-db
+    image: alert-db
     restart: on-failure
     networks:
-      - contact-stack
+      - alert-stack
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
     ports:
-      - "5432:5432"
+      - "5422:5432"
     volumes:
       - alert-pgdata:/var/lib/postgresql/data
 
@@ -159,8 +159,21 @@ services:
     volumes:
       - area-pgdata:/var/lib/postgresql/data
 
+  pg-admin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    networks:
+      - contact-stack
+      - alert-stack
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: admin@defra.gov.uk
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+
 networks:
   contact-stack:
+  alert-stack:
 volumes:
   contact-pgdata:
   area-pgdata:
