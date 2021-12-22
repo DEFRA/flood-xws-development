@@ -82,11 +82,10 @@ services:
     build:
       context: ../flood-xws-alert-web
     image: alert-web
-    depends_on:
-      - alert-db
     restart: on-failure
     environment:
       NODE_ENV: local
+      ENV: development
       PORT: 3000
       HOST: 0.0.0.0
       FORCE_HTTPS: "false"
@@ -95,8 +94,7 @@ services:
       DOCUMENTATION_HOME_PAGE: "http://localhost:3000/documentation"
       PHASE_BANNER_TAG: "local"
       PHASE_BANNER_HTML: "This is a TEST service - you will not issue alerts"
-      BUCKET_NAME: "xws-files-dev"
-      DATABASE_URL: "postgres://postgres:postgres@alert-db:5432"
+      DYNAMODB_TABLE_NAME: "xws-nbm-alerts"
     env_file:
       - ../flood-xws-config/flood-xws-alert-web/local.env
     ports:
@@ -118,20 +116,6 @@ services:
       API_URL: "http://localhost:3005"
 
 
-  alert-db:
-    build:
-      context: ../flood-xws-db
-    image: contact-db
-    restart: on-failure
-    networks:
-      - contact-stack
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - alert-pgdata:/var/lib/postgresql/data
 
   contact-db:
     build:
