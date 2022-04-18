@@ -100,7 +100,9 @@ Live flood alerts and warnings are hosted at these URLs:
 
  
 JSON Feed: https://xws-alert-sandbox-files.s3.eu-west-2.amazonaws.com/alerts/alerts.json
+
 CAP XML RSS Feed: https://xws-alert-sandbox-files.s3.eu-west-2.amazonaws.com/alerts/alerts.rss
+
 CAP XML ATOM Feed: https://xws-alert-sandbox-files.s3.eu-west-2.amazonaws.com/alerts/alerts.rss
 
 
