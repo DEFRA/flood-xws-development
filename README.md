@@ -6,6 +6,8 @@ XWS system overview documentation for developers
 
 [Link to diagram](https://app.diagrams.net/#G1S5-dDxH7QjJ753tOx-tl4uQMDv3Vqmlj)
 
+[WIP Development Notes](https://docs.google.com/document/d/1TPPNZ5jGzIcB9p36S7R-p6Zqe0URgAFe9DKnMkrri28/edit?pli=1#heading=h.oymnw3nlvwib)
+
 XWS is comprised of 4 main sub-systems, decoupled with a central data and event hub.
 
 ## Alert subsystem
